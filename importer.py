@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 from bs4 import BeautifulSoup
@@ -29,7 +29,7 @@ def create_table(f):
 		"konto" INTEGER,
 		"reskontranummer" INTEGER,
 		"reskontradatum" TEXT,
-		"transaktionsdatum"	TEXT,
+		"transaktionsdatum" TEXT,
 		"Text" TEXT,
 		"Belopp" INTEGER,
 		"Saldo" INTEGER,
