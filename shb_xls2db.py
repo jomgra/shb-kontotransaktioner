@@ -22,22 +22,22 @@ def create_connection(fn):
 
 def create_database(fn):
 	conn = create_connection(fn)
-	cursor = conn.cursor()
-	sql = '''
-	CREATE TABLE 'transaktioner' (
-		'id' TEXT UNIQUE,
-		'konto' INTEGER,
-		'reskontranummer' INTEGER,
-		'reskontradatum' TEXT,
-		'transaktionsdatum' TEXT,
-		'text' TEXT,
-		'belopp' INTEGER,
-		'saldo' INTEGER,
-		PRIMARY KEY("id")
-		)
-	'''
-	cursor.execute(sql)
-	conn.close()
+	with conn:
+		cursor = conn.cursor()
+		sql = '''
+		CREATE TABLE 'transaktioner' (
+			'id' TEXT UNIQUE,
+			'konto' INTEGER,
+			'reskontranummer' INTEGER,
+			'reskontradatum' TEXT,
+			'rtransaktionsdatum' TEXT,
+			'text' TEXT,
+			'belopp' INTEGER,
+			'saldo' INTEGER,
+			PRIMARY KEY("id")
+			)
+		'''
+		cursor.execute(sql)
 
 
 def import_transactions(fn):
@@ -70,41 +70,38 @@ def import_transactions(fn):
 		a.insert(0, hashlib.sha256("".join(a).encode("utf-8")).hexdigest())
 		
 		conn = create_connection(db)
-		cursor = conn.cursor()
+		with conn:
+			cursor = conn.cursor()
+			try:
+				sql = '''
+					INSERT INTO transaktioner (
+						id,
+						konto,
+						reskontranummer,
+						reskontradatum,
+						transaktionsdatum,
+						text,
+						belopp,
+						saldo)
+					values (?,?,?,?,?,?,?,?)
+				'''
+				cursor.execute(sql, a)
+				stat[0] += 1
+			except sqlite3.IntegrityError:
+				stat[1] += 1
 	
-		try:
-			sql = '''
-				INSERT INTO transaktioner (
-					id,
-					konto,
-					reskontranummer,
-					reskontradatum,
-					transaktionsdatum,
-					text,
-					belopp,
-					saldo)
-				values (?,?,?,?,?,?,?,?)
-			'''
-			cursor.execute(sql, a)
-			stat[0] += 1
-			
-		except sqlite3.IntegrityError:
-			stat[1] += 1
-
-		conn.commit()
-		conn.close()
+			conn.commit()
 	
 	return {"file": fn, "account": k, "added": stat[0], "ignored": stat[1]}
 
 
 def count_transactions(fn):
 	conn = create_connection(fn)
-	cursor = conn.cursor()
-	cursor.execute("SELECT COUNT(*) FROM transaktioner")
-	r = cursor.fetchone()[0]
-	conn.close()
-	return r
-
+	with conn:
+		cursor = conn.cursor()
+		cursor.execute("SELECT COUNT(*) FROM transaktioner")
+		r = cursor.fetchone()[0]
+		return r
 
 def main():
 	
@@ -120,6 +117,7 @@ def main():
 			print(key.capitalize(), ":", r[key])
 			
 	print("\nNumber of transactions in database:", count_transactions(db))
+	
 
 if __name__ == "__main__":
 	main()
