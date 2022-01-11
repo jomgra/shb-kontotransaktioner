@@ -4,10 +4,11 @@ import os
 from bs4 import BeautifulSoup
 import requests as req
 import sqlite3
-import hashlib 
+import hashlib
 
 path = "./"
 db = "mydb2.db"
+
 
 def create_connection(db_file):
 	conn = None
@@ -18,13 +19,14 @@ def create_connection(db_file):
 	
 	return conn
 
+
 def create_table(f):
 	conn = create_connection(f)
 	cursor = conn.cursor()
 	sql = '''
 	CREATE TABLE "transaktioner" (
 		"id" TEXT UNIQUE,
-		"konto" TEXT,
+		"konto" INTEGER,
 		"reskontranummer" INTEGER,
 		"reskontradatum" TEXT,
 		"transaktionsdatum"	TEXT,
@@ -36,15 +38,7 @@ def create_table(f):
 	'''
 	cursor.execute(sql)
 	conn.close()
-
-def add_transaction(arr):
-	conn = create_connection(db)
-	cursor = conn.cursor()			
-
-	cursor.execute("INSERT INTO transaktioner (id, konto, rekontranummer, reskontradatum, transaktionsdatum, Text, Belopp, Saldo) values (?,?,?,?,?,?,?)", arr)
-			
-	conn.commit()
-	conn.close()
+	
 
 if not os.path.isfile(db):
 	create_table(db)
@@ -64,13 +58,11 @@ for file in files:
 	print("Bankkonto:", k)
 	
 	soup = BeautifulSoup(c, "html5lib")
-	
 	table = soup.find_all("table")
-	
 	
 	for tr in table[3].find_all("tr"):
 		
-		td = tr.find_all("td", {"class" : "", "nowrap" : "nowrap"})
+		td = tr.find_all("td", {"class": "", "nowrap": "nowrap"})
 		if len(td) > 0:
 			
 			if td[0].text == y[0]:
@@ -80,16 +72,16 @@ for file in files:
 				y[1] = 1
 				y[0] = td[0].text
 				
-			a = [ k, str(y[1])]
+			a = [k, str(y[1])]
 			for s in td:
 				a.append(s.text)
-			a.insert(0,hashlib.sha256("".join(a).encode("utf-8")).hexdigest())
+			a.insert(0, hashlib.sha256("".join(a).encode("utf-8")).hexdigest())
 			
 			conn = create_connection(db)
-			cursor = conn.cursor()			
+			cursor = conn.cursor()
 		
 			try:
-				cursor.execute("INSERT INTO transaktioner (id, konto, reskontranummer, reskontradatum, transaktionsdatum, Text, Belopp, Saldo) values (?,?,?,?,?,?,?,?)", a)	
+				cursor.execute("INSERT INTO transaktioner (id, konto, reskontranummer, reskontradatum, transaktionsdatum, Text, Belopp, Saldo) values (?,?,?,?,?,?,?,?)", a)
 				stat[0] += 1
 				
 			except sqlite3.IntegrityError:
