@@ -24,22 +24,23 @@ def create_table(fn):
 	conn = create_connection(fn)
 	cursor = conn.cursor()
 	sql = '''
-	CREATE TABLE "transaktioner" (
-		"id" TEXT UNIQUE,
-		"konto" INTEGER,
-		"reskontranummer" INTEGER,
-		"reskontradatum" TEXT,
-		"transaktionsdatum" TEXT,
-		"Text" TEXT,
-		"Belopp" INTEGER,
-		"Saldo" INTEGER,
+	CREATE TABLE 'transaktioner' (
+		'id' TEXT UNIQUE,
+		'konto' INTEGER,
+		'reskontranummer' INTEGER,
+		'reskontradatum' TEXT,
+		'transaktionsdatum' TEXT,
+		'text' TEXT,
+		'belopp' INTEGER,
+		'saldo' INTEGER,
 		PRIMARY KEY("id")
 		)
 	'''
 	cursor.execute(sql)
 	conn.close()
 
-def import_transactions(fn)
+
+def import_transactions(fn):
 	y = ["", 1]
 	stat = [0, 0]
 	
@@ -72,18 +73,18 @@ def import_transactions(fn)
 		cursor = conn.cursor()
 	
 		try:
-      sql = '''
-      INSERT INTO transaktioner (
-        id, 
-        konto, 
-        reskontranummer, 
-        reskontradatum, 
-        transaktionsdatum, 
-        Text, 
-        Belopp, 
-        Saldo) 
-        values (?,?,?,?,?,?,?,?)      
-      '''
+			sql = '''
+				INSERT INTO transaktioner (
+					id,
+					konto,
+					reskontranummer,
+					reskontradatum,
+					transaktionsdatum,
+					text,
+					belopp,
+					saldo)
+				values (?,?,?,?,?,?,?,?)
+			'''
 			cursor.execute(sql, a)
 			stat[0] += 1
 			
@@ -93,14 +94,21 @@ def import_transactions(fn)
 		conn.commit()
 		conn.close()
 	
-  return { file : fn, account : k, added : stat[0], ignored: stat[0] }
+	return {"file": fn, "account": k, "added": stat[0], "ignored": stat[1]}
 
-if not os.path.isfile(db):
-	create_table(db)
+
+def main():
 	
-files = [s for s in os.listdir(path) if s.endswith(".xls")]
+	if not os.path.isfile(db):
+		create_table(db)
 
-for file in files:
-  r = import_transactions(file)
-	for key in r:
-    print(key,":",r[key])
+	files = [s for s in os.listdir(path) if s.endswith(".xls")]
+
+	for file in files:
+		r = import_transactions(file)
+		for key in r:
+			print(key.capitalize(), ":", r[key])
+			
+
+if __name__ == "__main__":
+	main()
