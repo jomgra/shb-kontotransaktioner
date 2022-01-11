@@ -20,7 +20,7 @@ def create_connection(fn):
 	return conn
 
 
-def create_table(fn):
+def create_database(fn):
 	conn = create_connection(fn)
 	cursor = conn.cursor()
 	sql = '''
@@ -97,18 +97,29 @@ def import_transactions(fn):
 	return {"file": fn, "account": k, "added": stat[0], "ignored": stat[1]}
 
 
+def count_transactions(fn):
+	conn = create_connection(fn)
+	cursor = conn.cursor()
+	cursor.execute("SELECT COUNT(*) FROM transaktioner")
+	r = cursor.fetchone()[0]
+	conn.close()
+	return r
+
+
 def main():
 	
 	if not os.path.isfile(db):
-		create_table(db)
+		create_database(db)
 
 	files = [s for s in os.listdir(path) if s.endswith(".xls")]
 
 	for file in files:
 		r = import_transactions(file)
+		print("\n")
 		for key in r:
 			print(key.capitalize(), ":", r[key])
 			
+	print("\nNumber of transactions in database:", count_transactions(db))
 
 if __name__ == "__main__":
 	main()
