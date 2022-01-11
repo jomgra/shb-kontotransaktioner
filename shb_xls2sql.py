@@ -30,10 +30,10 @@ def create_database(fn):
 			'konto' INTEGER,
 			'reskontranummer' INTEGER,
 			'reskontradatum' TEXT,
-			'rtransaktionsdatum' TEXT,
+			'transaktionsdatum' TEXT,
 			'text' TEXT,
-			'belopp' INTEGER,
-			'saldo' INTEGER,
+			'belopp' REAL,
+			'saldo' REAL,
 			PRIMARY KEY("id")
 			)
 		'''
@@ -55,12 +55,16 @@ def import_transactions(fn):
 	for tr in table[3].find_all("tr")[1:]:
 		
 		td = tr.find_all("td", {"class": "", "nowrap": "nowrap"})
-			
+		
 		if td[0].text == y[0]:
-			y[1] += 1
+			y[1] -= 1
 		else:
-			y[1] = 1
+			y[1] = 0
 			y[0] = td[0].text
+			for trr in table[3].find_all("tr")[1:]:
+				fc = next(trr.children, None)
+				if fc.text == td[0].text:
+					y[1]+= 1
 			
 		a = [k, str(y[1])]
 		
