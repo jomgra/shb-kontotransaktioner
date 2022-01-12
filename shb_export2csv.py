@@ -4,6 +4,7 @@ import sqlite3
 import os
 
 db = "mydb2.db"
+commadelimiter = True
 
 def create_connection(fn):
 	conn = None
@@ -18,7 +19,7 @@ def create_connection(fn):
 fn = os.path.splitext(db)[0]+".csv"
 print("Exporting db to file (" + fn + ")...")
 
-f = open(os.path.splitext(db)[0]+".csv", 'w', encoding="ISO-8859-1")
+f = open(fn, 'w', encoding="ISO-8859-1")
 conn = create_connection(db)
 cursor = conn.cursor()
 sql = '''
@@ -34,7 +35,14 @@ cursor.execute(sql)
 f.write("Konto;Reskontranr;Reskontradatum;Transaktionsdatum;Text;Belopp;Saldo\n")
 
 for id, k, resnr, resdat, tradat, text, belopp, saldo in cursor:
-	f.write(f'{k};{resnr};{resdat};{tradat};{text};{belopp};{saldo}\n')
+	if commadelimiter:
+		b = str(belopp).replace(".",",")
+		s = str(saldo).replace(".",",")
+	else:
+		b = belopp
+		s = saldo
+		
+	f.write(f'{k};{resnr};{resdat};{tradat};{text};{b};{s}\n')
 
 f.close()
 conn.close()
