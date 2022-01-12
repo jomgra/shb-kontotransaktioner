@@ -12,7 +12,7 @@ Med transaktionerna i SQLite-databasen kan uppgifter sedan bearbetas och exporte
 **Installation**
 
 1. Ladda ner importer.py och lägg en i valfri katalog.
-2. Plaecera dina xls-exporter i samma katalog eller redigera py-filen med rätt sökväg ("path").
+2. Plaecera dina xls-exporter i samma katalog eller redigera py-filen med rätt sökväg ("path"). Kom ihåg att exportfilerna från Handelsbanken måste innehålla "alla transaktioner". 
 3. Kör importer.py!
 
 Du ska nu ha en SQLite-databas i samma katalog som filerna!
