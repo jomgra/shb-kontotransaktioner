@@ -36,7 +36,7 @@ mem = {
 	"saldo": float(0),
 	"resdat": ""
 }
-
+print("Account transaction history")
 for id, k, resnr, resdat, tradat, text, belopp, saldo in cursor:
 	if mem["konto"] == k:
 		if round(mem["saldo"] + float(belopp), 2) == float(saldo):
