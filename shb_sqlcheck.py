@@ -17,6 +17,10 @@ def create_connection(fn):
 
 conn = create_connection(db)
 cursor = conn.cursor()
+
+#cursor.execute("DELETE FROM transaktioner WHERE rowid=232")
+#conn.commit()
+
 sql = '''
 	SELECT * 
 	FROM "transaktioner"
@@ -29,31 +33,29 @@ cursor.execute(sql)
 
 mem = {
 	"konto": "",
-	"saldo": 0,
+	"saldo": float(0),
 	"resdat": ""
 }
 
 for id, k, resnr, resdat, tradat, text, belopp, saldo in cursor:
-	print(float(saldo))
-	
-'''
 	if mem["konto"] == k:
-		if mem["saldo"] + float(belopp) == float(saldo):
+		if round(mem["saldo"] + float(belopp), 2) == float(saldo):
 			mem["saldo"] = float(saldo)
+			mem["resdat"] = resdat
+			
 		else:
 			print(mem["resdat"])
-			print(resdat + "-", end="")
+			print(resdat + " - ", end="")
 			mem["resdat"] = resdat
-			mem["saldo"] = saldo
+			mem["saldo"] = float(saldo)
+			
 	else:
-
 		print(mem["resdat"])
-		print("Account:" + k)
-		print(resdat + "-", end="")
+		print("\nAccount: " + k)
+		print(resdat + " - ", end="")
 		mem["konto"] = k
-		mem["saldo"] = saldo
+		mem["saldo"] = float(saldo)
 		mem["resdat"] = resdat
 		
-'''
-			
+print(resdat)			
 conn.close()

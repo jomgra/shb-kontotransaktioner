@@ -73,6 +73,9 @@ def import_transactions(fn):
 			
 		a.insert(0, hashlib.sha256("".join(a).encode("utf-8")).hexdigest())
 		
+		a[7] = float(a[7].replace(",",".").replace(" ",""))
+		a[6] = float(a[6].replace(",",".").replace(" ",""))
+		
 		conn = create_connection(db)
 		with conn:
 			cursor = conn.cursor()
