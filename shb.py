@@ -121,7 +121,7 @@ def main():
 		r = import_transactions(file)
 		print("\n")
 		for key in r:
-			print(key.capitalize(), ":", r[key])
+			print(key.capitalize() + ":", r[key])
 			
 	print("\nNumber of transactions in database:", count_transactions(db))
 	
