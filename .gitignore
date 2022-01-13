@@ -1,4 +1,4 @@
-# Datafiles
+# Data and config files 
 *.xls
 *.xlsx
 *.sqlite
@@ -6,3 +6,4 @@
 *.db3
 *.sqlite3
 *.csv
+*.ini
