@@ -27,6 +27,9 @@ print("Writing history to file (" + fn + ")...")
 
 conn = create_connection(db)
 cursor = conn.cursor()
+
+cursor.execute("delete from transaktioner where rowid=16") # For testing
+
 sql = '''
 	SELECT * 
 	FROM "transaktioner"
@@ -49,6 +52,7 @@ for id, k, resnr, resdat, tradat, text, belopp, saldo in cursor:
 		
 	if k not in accounts:
 		accounts.append(k)
+		
 	try:
 		day[resdat][k] = s
 	except:
@@ -71,8 +75,8 @@ f.write("\n")
 
 while currentdate <= enddate:
 	c = str(currentdate)
+	f.write(c)
 	if c in day:
-		f.write(c)
 		for a in accounts:
 			if a in day[c]:
 				f.write(";"+day[c][a])
@@ -80,6 +84,11 @@ while currentdate <= enddate:
 			else:
 				f.write(";"+oldsaldo[a])
 		f.write("\n")
+	else:
+		for a in accounts:
+			f.write(";"+oldsaldo[a])
+		f.write("\n")
+		
 	currentdate += d
 f.close()
 
